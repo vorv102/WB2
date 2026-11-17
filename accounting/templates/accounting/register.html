@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация — Учёт ПО{% endblock %}
+
+{% block content %}
+    <div class="auth-card">
+        <div class="auth-logo">◆</div>
+        <h1>Регистрация</h1>
+        <p class="muted">Создайте аккаунт для доступа к реестру ПО.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-full">Зарегистрироваться</button>
+        </form>
+        <p class="muted">Уже есть аккаунт? <a href="{% url 'login' %}">Войти</a></p>
+    </div>
+{% endblock %}

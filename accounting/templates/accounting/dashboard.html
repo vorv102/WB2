@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Сводка — Учёт ПО{% endblock %}
+
+{% block content %}
+    <div class="hero">
+        <div>
+            <h1>Реестр программного обеспечения</h1>
+            <p>Нефтегазовое предприятие · сводка по лицензиям и подразделениям</p>
+        </div>
+        <a href="{% url 'accounting:license_create' %}" class="btn">+ Учесть лицензию</a>
+    </div>
+
+    <div class="stats">
+        <div class="stat stat-blue"><strong>{{ software_count }}</strong><span>Позиций ПО в реестре</span></div>
+        <div class="stat"><strong>{{ license_count }}</strong><span>Учтено лицензий</span></div>
+        <div class="stat stat-green"><strong>{{ active_count }}</strong><span>Активных лицензий</span></div>
+        <div class="stat stat-orange"><strong>{{ expiring_count }}</strong><span>Истекают через 30 дней</span></div>
+    </div>
+
+    <div class="two-columns">
+        <section class="panel">
+            <h2>Лицензии с истекающим сроком</h2>
+            {% if expiring %}
+                <ul class="item-list">
+                    {% for item in expiring %}
+                        <li>
+                            <a href="{% url 'accounting:license_detail' item.pk %}">{{ item.inventory_number }}</a>
+                            <span class="muted">{{ item.software.name }} · {{ item.department.code }}</span>
+                            <span class="badge badge-expiring">до {{ item.expiry_date|date:"d.m.Y" }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="muted">Лицензий с истекающим сроком нет.</p>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>Последние учтённые лицензии</h2>
+            {% if recent %}
+                <ul class="item-list">
+                    {% for item in recent %}
+                        <li>
+                            <a href="{% url 'accounting:license_detail' item.pk %}">{{ item.inventory_number }}</a>
+                            <span class="muted">{{ item.software.name }}</span>
+                            <span class="badge badge-{{ item.status }}">{{ item.get_status_display }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="muted">Записей пока нет.</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <div class="two-columns">
+        <section class="panel">
+            <h2>ПО по категориям</h2>
+            {% if by_category %}
+                <table class="mini-table">
+                    {% for name, count in by_category %}
+                        <tr><td>{{ name }}</td><td><strong>{{ count }}</strong></td></tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p class="muted">Категорий пока нет.</p>
+            {% endif %}
+        </section>
+
+        <section class="panel">
+            <h2>Подразделения-лидеры по лицензиям</h2>
+            {% if top_departments %}
+                <table class="mini-table">
+                    {% for dep in top_departments %}
+                        <tr>
+                            <td>{{ dep.name }}</td>
+                            <td><strong>{{ dep.count }}</strong></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p class="muted">Данных пока нет.</p>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

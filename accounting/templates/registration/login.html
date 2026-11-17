@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Вход — Учёт ПО{% endblock %}
+
+{% block content %}
+    <div class="auth-card">
+        <div class="auth-logo">◆</div>
+        <h1>Вход в систему</h1>
+        <p class="muted">Учёт программного обеспечения нефтегазового предприятия</p>
+        {% if form.errors %}
+            <div class="alert alert-error">Неверное имя пользователя или пароль.</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" class="btn btn-full">Войти</button>
+        </form>
+        <p class="muted">Нет аккаунта? <a href="{% url 'accounting:register' %}">Зарегистрироваться</a></p>
+    </div>
+{% endblock %}

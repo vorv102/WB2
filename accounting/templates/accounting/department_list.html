@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Подразделения — Учёт ПО{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Подразделения предприятия</h1>
+            <p class="muted">Структурные единицы, за которыми закреплено ПО</p>
+        </div>
+        <a href="{% url 'accounting:department_create' %}" class="btn">+ Добавить</a>
+    </div>
+
+    {% if items %}
+        <table class="task-table">
+            <thead>
+                <tr><th>Код</th><th>Название</th><th>Описание</th><th>Лицензий</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td><strong>{{ item.code }}</strong></td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description|truncatechars:60|default:"—" }}</td>
+                        <td>{{ item.count }}</td>
+                        <td class="row-actions">
+                            <a href="{% url 'accounting:department_edit' item.pk %}">изм.</a>
+                            <a href="{% url 'accounting:department_delete' item.pk %}">уд.</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty"><h2>Подразделений нет</h2></div>
+    {% endif %}
+{% endblock %}

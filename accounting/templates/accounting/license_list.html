@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Лицензии — Учёт ПО{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1>Учёт лицензий</h1>
+            <p class="muted">Найдено: {{ items|length }}</p>
+        </div>
+        <a href="{% url 'accounting:license_create' %}" class="btn">+ Учесть лицензию</a>
+    </div>
+
+    <form method="get" class="filters">
+        <input type="text" name="q" value="{{ filters.q }}" placeholder="Инв. номер, ключ, ответственный, ПО">
+        <select name="status">
+            <option value="">Все статусы</option>
+            {% for value, title in statuses %}
+                <option value="{{ value }}" {% if value == filters.status %}selected{% endif %}>{{ title }}</option>
+            {% endfor %}
+        </select>
+        <select name="software">
+            <option value="">Всё ПО</option>
+            {% for item in softwares %}
+                <option value="{{ item.pk }}" {% if item.pk|stringformat:'s' == filters.software %}selected{% endif %}>{{ item.name }}</option>
+            {% endfor %}
+        </select>
+        <select name="department">
+            <option value="">Все подразделения</option>
+            {% for item in departments %}
+                <option value="{{ item.pk }}" {% if item.pk|stringformat:'s' == filters.department %}selected{% endif %}>{{ item.code }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn">Применить</button>
+        <a href="{% url 'accounting:license_list' %}" class="btn btn-secondary">Сбросить</a>
+    </form>
+
+    {% if items %}
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>Инв. номер</th>
+                    <th>ПО</th>
+                    <th>Подразделение</th>
+                    <th>Кол-во</th>
+                    <th>Окончание</th>
+                    <th>Ответственный</th>
+                    <th>Статус</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td><a href="{% url 'accounting:license_detail' item.pk %}">{{ item.inventory_number }}</a></td>
+                        <td>{{ item.software.name }}</td>
+                        <td>{{ item.department.code }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.expiry_date|date:"d.m.Y"|default:"—" }}</td>
+                        <td>{{ item.responsible }}</td>
+                        <td><span class="badge badge-{{ item.status }}">{{ item.get_status_display }}</span></td>
+                        <td class="row-actions">
+                            <a href="{% url 'accounting:license_edit' item.pk %}">изм.</a>
+                            <a href="{% url 'accounting:license_delete' item.pk %}">уд.</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty"><h2>Лицензии не найдены</h2><p class="muted">Измените фильтры или учтите новую лицензию.</p></div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ software.name }} — Учёт ПО{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'accounting:software_list' %}">← К реестру ПО</a></p>
+
+    <div class="page-head">
+        <div>
+            <h1>{{ software.name }} <span class="muted">{{ software.version }}</span></h1>
+            <p class="muted">{{ software.description|default:"Описание отсутствует"|linebreaksbr }}</p>
+        </div>
+        <div class="actions">
+            <a href="{% url 'accounting:software_edit' software.pk %}" class="btn btn-secondary">Редактировать</a>
+            <a href="{% url 'accounting:software_delete' software.pk %}" class="btn btn-danger">Удалить</a>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div><strong>Вендор:</strong> {{ software.vendor }}</div>
+        <div><strong>Категория:</strong> {{ software.get_category_display }}</div>
+        <div><strong>Версия:</strong> {{ software.version }}</div>
+        <div><strong>Критичное ПО:</strong> {% if software.is_critical %}Да{% else %}Нет{% endif %}</div>
+        <div><strong>Лицензий:</strong> {{ software.license_count }}</div>
+    </div>
+
+    <h2>Учтенные лицензии</h2>
+    {% if licenses %}
+        <table class="task-table">
+            <thead>
+                <tr>
+                    <th>Инв. номер</th>
+                    <th>Подразделение</th>
+                    <th>Кол-во</th>
+                    <th>Статус</th>
+                    <th>Окончание</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in licenses %}
+                    <tr>
+                        <td><a href="{% url 'accounting:license_detail' item.pk %}">{{ item.inventory_number }}</a></td>
+                        <td>{{ item.department.code }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td><span class="badge badge-{{ item.status }}">{{ item.get_status_display }}</span></td>
+                        <td>{{ item.expiry_date|date:"d.m.Y"|default:"—" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="muted">Лицензии не учтены.</p>
+    {% endif %}
+{% endblock %}

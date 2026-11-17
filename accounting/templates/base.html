@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Учёт ПО · Нефтегаз{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{% url 'accounting:dashboard' %}" class="brand">
+                <span class="brand-mark">◆</span> НефтеГаз<span class="brand-light">·УчётПО</span>
+            </a>
+            <nav class="nav">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounting:dashboard' %}">Сводка</a>
+                    <a href="{% url 'accounting:software_list' %}">ПО</a>
+                    <a href="{% url 'accounting:department_list' %}">Подразделения</a>
+                    <a href="{% url 'accounting:license_list' %}">Лицензии</a>
+                    <a href="{% url 'accounting:license_create' %}" class="btn btn-small">+ Учесть</a>
+                    <span class="user-name">{{ user.username }}</span>
+                    <form action="{% url 'logout' %}" method="post" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-link">Выйти</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}">Войти</a>
+                    <a href="{% url 'accounting:register' %}" class="btn btn-small">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer container">
+        <p>Система учёта программного обеспечения · Предприятие нефтегазовой отрасли</p>
+    </footer>
+</body>
+</html>

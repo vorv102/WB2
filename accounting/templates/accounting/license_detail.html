@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ license.inventory_number }} — Учёт ПО{% endblock %}
+
+{% block content %}
+    <p><a href="{% url 'accounting:license_list' %}">← К лицензиям</a></p>
+
+    <div class="page-head">
+        <div>
+            <h1>Лицензия {{ license.inventory_number }}</h1>
+            <p class="muted">{{ license.software.name }} {{ license.software.version }}</p>
+        </div>
+        <div class="actions">
+            <a href="{% url 'accounting:license_edit' license.pk %}" class="btn btn-secondary">Редактировать</a>
+            <a href="{% url 'accounting:license_delete' license.pk %}" class="btn btn-danger">Удалить</a>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <div><strong>Статус:</strong> <span class="badge badge-{{ license.status }}">{{ license.get_status_display }}</span></div>
+        <div><strong>Подразделение:</strong> {{ license.department.name }}</div>
+        <div><strong>Количество:</strong> {{ license.quantity }}</div>
+        <div><strong>Ответственный:</strong> {{ license.responsible }}</div>
+        <div><strong>Дата покупки:</strong> {{ license.purchase_date|date:"d.m.Y" }}</div>
+        <div><strong>Дата окончания:</strong> {{ license.expiry_date|date:"d.m.Y"|default:"бессрочно" }}</div>
+        {% if license.expiry_date %}
+            <div><strong>Осталось дней:</strong> {{ license.days_left }}</div>
+        {% endif %}
+        <div><strong>Добавил:</strong> {{ license.created_by.username|default:"система" }}</div>
+    </div>
+
+    <section class="panel">
+        <h2>Дополнительная информация</h2>
+        <p><strong>Лицензионный ключ:</strong> <code>{{ license.license_key|default:"—" }}</code></p>
+        <p><strong>Примечание:</strong> {{ license.notes|default:"—"|linebreaksbr }}</p>
+        <p class="muted">Учтено: {{ license.created_at|date:"d.m.Y H:i" }}</p>
+    </section>
+{% endblock %}
